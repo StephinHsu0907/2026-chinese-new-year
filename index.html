@@ -10,10 +10,7 @@
       --cream:#fff7e6;
       --gold:#fbbf24;
       --red:#ef4444;
-      --redDeep:#b91c1c;
       --shadow:rgba(0,0,0,.35);
-      --glass:rgba(0,0,0,.22);
-      --glass2:rgba(0,0,0,.18);
       --stroke:rgba(255,255,255,.16);
     }
 
@@ -28,7 +25,7 @@
 
       /* 背景圖 */
       background:
-        radial-gradient(1200px 800px at 50% 28%, rgba(0,0,0,.14), rgba(0,0,0,.52)),
+        radial-gradient(1200px 800px at 50% 28%, rgba(0,0,0,.10), rgba(0,0,0,.45)),
         url("bg.jpg") center/cover no-repeat fixed;
     }
 
@@ -40,8 +37,8 @@
       border-radius:28px;
       border:6px solid rgba(239,68,68,.78);
       box-shadow:
-        0 0 0 2px rgba(251,191,36,.22) inset,
-        0 22px 70px rgba(0,0,0,.35);
+        0 0 0 2px rgba(251,191,36,.18) inset,
+        0 22px 70px rgba(0,0,0,.30);
       pointer-events:none;
       z-index:2;
     }
@@ -50,7 +47,7 @@
       position:fixed;
       inset:24px;
       border-radius:22px;
-      border:1px solid rgba(251,191,36,.22);
+      border:1px solid rgba(251,191,36,.18);
       pointer-events:none;
       z-index:2;
     }
@@ -82,8 +79,8 @@
       top:-20px;
       width:6px; height:6px;
       border-radius:99px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(251,191,36,.95), rgba(251,191,36,.25));
-      box-shadow: 0 0 16px rgba(251,191,36,.35);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(251,191,36,.95), rgba(251,191,36,.18));
+      box-shadow: 0 0 16px rgba(251,191,36,.30);
       opacity:.95;
       animation-name: dustFall;
       animation-timing-function: linear;
@@ -92,7 +89,7 @@
     @keyframes dustFall{
       0%   { transform: translateY(-30px) translateX(0px); opacity:0; }
       10%  { opacity: .95; }
-      100% { transform: translateY(calc(100vh + 60px)) translateX(24px); opacity:0; }
+      100% { transform: translateY(calc(100vh + 60px)) translateX(var(--drift)); opacity:0; }
     }
 
     /* 燈籠（左右兩側） */
@@ -102,7 +99,7 @@
       width:82px;
       height:130px;
       opacity:.95;
-      filter: drop-shadow(0 12px 20px rgba(0,0,0,.5));
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,.45));
       transform-origin: 50% 0%;
       animation: sway 3.2s ease-in-out infinite;
       z-index:4;
@@ -129,21 +126,21 @@
       padding:24px;
     }
 
+    /* ✅ 透明感加強：背景更透、blur 更強 */
     .sideCard{
       width:min(360px, 92vw);
       border-radius:24px;
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,.18));
-      backdrop-filter: blur(10px);
-      box-shadow: 0 22px 60px rgba(0,0,0,.32);
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.08));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 22px 60px rgba(0,0,0,.25);
       overflow:hidden;
     }
 
     .sideCard .head{
       padding:18px 18px 12px;
-      border-bottom:1px solid rgba(255,255,255,.12);
-      background:
-        linear-gradient(90deg, rgba(239,68,68,.22), rgba(251,191,36,.16), rgba(239,68,68,.18));
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(90deg, rgba(239,68,68,.14), rgba(251,191,36,.10), rgba(239,68,68,.12));
     }
 
     .ribbon{
@@ -152,8 +149,8 @@
       gap:10px;
       padding:9px 12px;
       border-radius:999px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.16);
+      border: 1px solid rgba(255,255,255,.14);
       font-weight:900;
       letter-spacing:.02em;
     }
@@ -163,7 +160,7 @@
       font-size: clamp(28px, 3vw, 40px);
       line-height:1.08;
       letter-spacing:.02em;
-      text-shadow: 0 10px 26px rgba(0,0,0,.35);
+      text-shadow: 0 10px 26px rgba(0,0,0,.30);
     }
 
     .body{
@@ -174,8 +171,8 @@
       display:inline-block;
       padding:5px 10px;
       border-radius:999px;
-      background: rgba(251,191,36,.16);
-      border: 1px solid rgba(251,191,36,.30);
+      background: rgba(251,191,36,.12);
+      border: 1px solid rgba(251,191,36,.24);
       color: rgba(255,255,255,.92);
       font-weight:1000;
       font-size:12px;
@@ -188,7 +185,7 @@
       font-weight:1000;
       letter-spacing:.06em;
       color:#fff;
-      text-shadow: 0 12px 24px rgba(0,0,0,.34);
+      text-shadow: 0 12px 24px rgba(0,0,0,.28);
     }
 
     .chips{
@@ -199,14 +196,14 @@
     }
 
     .chip{
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: 16px;
       padding:10px 12px;
       font-weight:1000;
       text-align:center;
       color: rgba(255,255,255,.95);
-      box-shadow: 0 10px 18px rgba(0,0,0,.18);
+      box-shadow: 0 10px 18px rgba(0,0,0,.14);
       transition: transform .12s ease;
     }
     .chip:hover{ transform: translateY(-2px); }
@@ -223,8 +220,8 @@
     .sig .name{
       padding:6px 10px;
       border-radius: 14px;
-      background: rgba(239,68,68,.16);
-      border: 1px solid rgba(239,68,68,.34);
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.26);
     }
 
     .btnRow{
@@ -242,7 +239,7 @@
       font-weight:1000;
       color: #2b1b09;
       background: linear-gradient(135deg, var(--gold), #fde68a);
-      box-shadow: 0 14px 30px rgba(251,191,36,.16);
+      box-shadow: 0 14px 30px rgba(251,191,36,.14);
       transition: transform .08s ease, filter .15s ease;
       flex: 1 1 150px;
     }
@@ -250,19 +247,20 @@
     button:active{ transform: translateY(1px) scale(.99); }
 
     .ghost{
-      background: rgba(255,255,255,.10);
+      background: rgba(255,255,255,.08);
       color: rgba(255,255,255,.92);
-      border: 1px solid rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.12);
       box-shadow:none;
     }
 
+    /* ✅ 透明感加強：全文框更透 */
     .fullText{
       margin-top:10px;
       white-space:pre-line;
       line-height:1.75;
-      color: rgba(255,255,255,.90);
-      background: rgba(0,0,0,.14);
-      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.92);
+      background: rgba(0,0,0,.08);
+      border: 1px solid rgba(255,255,255,.10);
       border-radius:16px;
       padding:12px 12px;
     }
@@ -273,7 +271,6 @@
       min-width: min(34vw, 520px);
       height: min(70vh, 640px);
       border-radius:24px;
-      /* 透明，只是佔位確保左右卡片不往中間擠 */
       background: transparent;
       pointer-events:none;
     }
@@ -286,7 +283,7 @@
       transform:translateX(-50%);
       padding:10px 14px;
       border-radius:16px;
-      background: rgba(0,0,0,.55);
+      background: rgba(0,0,0,.50);
       border: 1px solid rgba(255,255,255,.14);
       backdrop-filter: blur(8px);
       color: #fff;
@@ -297,19 +294,15 @@
       pointer-events:none;
     }
 
-    /* 手機：改成上下排列（仍盡量不蓋中間） */
+    /* 手機：上下排列 */
     @media (max-width: 980px){
       .wrap{
         flex-direction:column;
         justify-content:flex-start;
         padding-top: 84px;
       }
-      .centerClear{
-        display:none;
-      }
-      .goldDustZone{
-        width: 34vw; /* 手機寬一點仍在側邊 */
-      }
+      .centerClear{ display:none; }
+      .goldDustZone{ width: 34vw; }
     }
   </style>
 </head>
@@ -389,8 +382,8 @@
     <!-- 中間留白（保護背景中央馬不要被擋） -->
     <div class="centerClear" aria-hidden="true"></div>
 
-    <!-- 右側卡片 -->
-    <aside class="sideCard" aria-label="互動與全文">
+    <!-- 右側卡片（✅ 改成長祝福文） -->
+    <aside class="sideCard" aria-label="互動與祝福文">
       <div class="head">
         <div class="ribbon">🎆 一起熱鬧一下</div>
         <h1 style="font-size: clamp(22px, 2.4vw, 30px); margin-top:10px;">新年快樂</h1>
@@ -403,13 +396,13 @@
         </div>
 
         <div class="fullText" id="fullText">
-Stephin 祝福您
-恭喜發財
-萬事如意
-心想事成
-龍馬精神
-日進斗金
-新年快樂
+新的一年，願您像馬一樣，
+不受拘束，向著標竿奔跑。
+
+願您步伐堅定、心裡有光，
+把每個目標都跑成好消息。
+
+Stephin 敬上
         </div>
       </div>
     </aside>
@@ -455,20 +448,19 @@ Stephin 祝福您
         const left = Math.random() * 100; // %
         const size = 3 + Math.random() * 4; // px
         const dur = 4 + Math.random() * 6; // sec
-        const delay = -Math.random() * dur; // 讓一進來就有飄
-        const drift = 10 + Math.random() * 30; // px
+        const delay = -Math.random() * dur;
+        const drift = (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 36); // px
         s.style.left = left + "%";
         s.style.width = size + "px";
         s.style.height = size + "px";
         s.style.animationDuration = dur + "s";
         s.style.animationDelay = delay + "s";
-        // 利用隨機偏移調整飄移感
         s.style.setProperty("--drift", drift + "px");
         box.appendChild(s);
       }
     }
-    makeDust("dustLeft", 34);
-    makeDust("dustRight", 34);
+    makeDust("dustLeft", 36);
+    makeDust("dustRight", 36);
 
     // ===== 煙火 / 彩紙 Canvas =====
     const canvas = document.getElementById('fx');
@@ -549,7 +541,7 @@ Stephin 祝福您
     }
     loop();
 
-    // 按鈕：放煙火（在偏上、但不強制正中）
+    // 按鈕：放煙火
     document.getElementById('btnFire').addEventListener('click', ()=>{
       fireworkAtClient(innerWidth*0.52, innerHeight*0.28);
       toast("新年快樂！🎉");
@@ -570,7 +562,7 @@ Stephin 祝福您
       }
     });
 
-    // 進場放一次（偏上）
+    // 進場放一次
     setTimeout(()=>fireworkAtClient(innerWidth*0.52, innerHeight*0.30), 450);
   </script>
 </body>
