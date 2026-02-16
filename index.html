@@ -2,46 +2,52 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Stephin給您拜年啦</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --gold: #fbbf24;
-      --gold-glow: #f59e0b;
-      --red-glass: rgba(40, 0, 0, 0.65); /* 深紅磨砂底色 */
-      --glass-border: rgba(255, 230, 150, 0.2);
-      --text-main: #fff7e6;
+      --cream:#fff7e6;
+      --gold:#fbbf24;
+      --red:#ef4444;
+      --shadow:rgba(0,0,0,.35);
+      --stroke:rgba(255,255,255,.16);
     }
 
-    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    *{ box-sizing:border-box; }
 
     body{
       margin:0;
       min-height:100vh;
-      font-family: "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
-      color: var(--text-main);
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      color: var(--cream);
       overflow:hidden;
-      /* 背景設定 */
       background:
-        radial-gradient(circle at 50% 30%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 80%), /* 輕微暗角 */
+        radial-gradient(1200px 800px at 50% 28%, rgba(0,0,0,.10), rgba(0,0,0,.45)),
         url("bg.jpg") center/cover no-repeat fixed;
     }
 
-    /* 極細金邊框，視野更開闊 */
+    /* 紅色邊框 */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:14px;
+      border-radius:28px;
+      border:6px solid rgba(239,68,68,.78);
+      box-shadow:
+        0 0 0 2px rgba(251,191,36,.18) inset,
+        0 22px 70px rgba(0,0,0,.30);
+      pointer-events:none;
+      z-index:2;
+    }
     body::after{
       content:"";
       position:fixed;
-      inset:10px;
-      border:1px solid rgba(255, 215, 0, 0.3);
-      border-radius:12px;
+      inset:24px;
+      border-radius:22px;
+      border:1px solid rgba(251,191,36,.18);
       pointer-events:none;
-      z-index:100;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+      z-index:2;
     }
 
     /* 煙火畫布 */
@@ -51,380 +57,489 @@
       width:100%;
       height:100%;
       pointer-events:none;
-      z-index:1;
+      z-index:6;
     }
 
-    /* 燈籠 (保留原本邏輯，微調位置避免遮擋) */
+    /* 左右金粉（只在兩側） */
+    .goldDustZone{
+      position:fixed;
+      top:0; bottom:0;
+      width:min(26vw, 360px);
+      pointer-events:none;
+      z-index:3;
+      overflow:hidden;
+    }
+    .goldDustZone.left{ left:0; }
+    .goldDustZone.right{ right:0; }
+
+    .dust{
+      position:absolute;
+      top:-20px;
+      width:6px; height:6px;
+      border-radius:99px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(251,191,36,.95), rgba(251,191,36,.18));
+      box-shadow: 0 0 16px rgba(251,191,36,.30);
+      opacity:.95;
+      animation-name: dustFall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    @keyframes dustFall{
+      0%   { transform: translateY(-30px) translateX(0px); opacity:0; }
+      10%  { opacity: .95; }
+      100% { transform: translateY(calc(100vh + 60px)) translateX(var(--drift)); opacity:0; }
+    }
+
+    /* 燈籠（左右兩側） */
     .lantern{
       position:fixed;
-      top:-25px;
-      width:70px; /* 稍微縮小一點 */
-      height:110px;
-      filter: drop-shadow(0 10px 15px rgba(0,0,0,.5));
+      top:-18px;
+      width:82px;
+      height:130px;
+      opacity:.95;
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,.45));
       transform-origin: 50% 0%;
-      animation: sway 4s ease-in-out infinite;
-      z-index:2;
+      animation: sway 3.2s ease-in-out infinite;
+      z-index:4;
       pointer-events:none;
     }
-    .lantern.left{ left:2vw; }
-    .lantern.right{ right:2vw; animation-delay:-1.5s; }
-    /* 移除低位燈籠，保持畫面中段乾淨 */
-    
+    .lantern.left{ left:18px; }
+    .lantern.right{ right:18px; animation-delay:-1.3s; }
+    .lantern.left.low{ top:160px; left:26px; width:68px; height:110px; opacity:.9; animation-delay:-.6s; }
+    .lantern.right.low{ top:170px; right:30px; width:68px; height:110px; opacity:.9; animation-delay:-1.9s; }
     @keyframes sway{
-      0%,100%{ transform: rotate(-4deg); }
-      50%{ transform: rotate(4deg); }
+      0%,100%{ transform: rotate(-3deg); }
+      50%{ transform: rotate(3deg); }
     }
 
-    /* === 主要佈局 === */
+    /* 版面：左右兩側卡片，中間留白 */
     .wrap{
       position:relative;
-      z-index:10;
-      height:100vh;
-      width: 100%;
-      padding: 20px 4vw 30px; /* 底部留空間 */
+      z-index:5;
+      min-height:100vh;
       display:flex;
-      /* 關鍵改動：將內容推到底部，讓出上方背景 */
-      align-items: flex-end; 
-      justify-content: space-between;
-      gap: 20px;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      padding:24px;
     }
 
-    /* === 玻璃卡片通用樣式 === */
-    .glass-card{
-      position: relative;
-      background: var(--red-glass);
-      backdrop-filter: blur(12px) saturate(120%);
-      -webkit-backdrop-filter: blur(12px) saturate(120%);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-      transition: transform 0.3s ease, background 0.3s;
-      display: flex;
-      flex-direction: column;
-    }
-    .glass-card:hover{
-      background: rgba(50, 0, 0, 0.75);
+    /* 透明卡片 */
+    .sideCard{
+      width:min(380px, 92vw);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.08));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 22px 60px rgba(0,0,0,.25);
+      overflow:hidden;
     }
 
-    /* === 左側：祝福語 === */
-    .card-left{
-      width: 320px;
-      max-width: 45vw;
-      text-align: left;
+    .sideCard .head{
+      padding:18px 18px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(90deg, rgba(239,68,68,.14), rgba(251,191,36,.10), rgba(239,68,68,.12));
     }
 
-    .calligraphy-title{
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: clamp(32px, 4vw, 48px);
-      line-height: 1.2;
-      color: var(--gold);
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-      margin-bottom: 8px;
-    }
-    
-    .sub-title{
-      font-size: 14px;
-      color: rgba(255,255,255,0.8);
-      font-weight: bold;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap:8px;
-    }
-    .sub-title::before{
-      content:''; display:block; width:20px; height:1px; background:var(--gold);
+    .ribbon{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:9px 12px;
+      border-radius:999px;
+      background: rgba(0,0,0,.16);
+      border: 1px solid rgba(255,255,255,.14);
+      font-weight:900;
+      letter-spacing:.02em;
+      color: rgba(255,255,255,.92);
     }
 
-    .tags-grid{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    /* 更自然的標題排版 */
+    .title{
+      margin:12px 0 0;
+      line-height:1.10;
+      letter-spacing:.01em;
+      text-shadow: 0 10px 26px rgba(0,0,0,.30);
+      font-weight:1000;
     }
-    .tag{
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,215,0,0.2);
-      padding: 6px 12px;
-      border-radius: 50px;
-      font-size: 13px;
-      color: #fff;
-      font-weight: 500;
+    .titleLine{
+      display:block;
+      font-size: clamp(30px, 3.4vw, 44px);
+      white-space: nowrap;
+    }
+    .titleLine + .titleLine{ margin-top:6px; }
+    @media (min-width: 560px){
+      .titleLine{ display:inline; }
+      .titleLine + .titleLine{ margin-top:0; }
+      .title{ font-size: clamp(30px, 3.2vw, 42px); }
     }
 
-    /* === 右側：互動區 === */
-    .card-right{
-      width: 300px;
-      max-width: 45vw;
+    .body{ padding:16px 18px 18px; }
+
+    .badge{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      background: rgba(251,191,36,.12);
+      border: 1px solid rgba(251,191,36,.24);
+      color: rgba(255,255,255,.92);
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing:.06em;
+      margin-bottom:10px;
     }
 
-    .msg-box{
-      font-size: 15px;
-      line-height: 1.6;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 15px;
-      font-weight: 400;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    .bigLine{
+      margin:6px 0 10px;
+      font-size: clamp(20px, 2.2vw, 28px);
+      font-weight:1000;
+      letter-spacing:.06em;
+      color:#fff;
+      text-shadow: 0 12px 24px rgba(0,0,0,.28);
+      line-height:1.25;
     }
-    
-    .action-row{
-      display: flex;
-      gap: 10px;
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
     }
 
     button{
-      flex: 1;
-      cursor: pointer;
-      border: none;
-      padding: 12px 0;
-      border-radius: 12px;
-      font-weight: bold;
-      font-family: inherit;
-      transition: all 0.2s;
-      font-size: 14px;
+      cursor:pointer;
+      border:none;
+      padding:12px 14px;
+      border-radius:16px;
+      font-weight:1000;
+      color: #2b1b09;
+      background: linear-gradient(135deg, var(--gold), #fde68a);
+      box-shadow: 0 14px 30px rgba(251,191,36,.14);
+      transition: transform .08s ease, filter .15s ease;
+      flex: 1 1 150px;
     }
-    
-    .btn-primary{
-      background: linear-gradient(135deg, #fbbf24, #d97706);
-      color: #3e1a00;
-      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
-    }
-    .btn-primary:active{ transform: scale(0.96); }
-    
-    .btn-ghost{
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-    }
-    .btn-ghost:hover{ background: rgba(255,255,255,0.15); }
-    .btn-ghost:active{ transform: scale(0.96); }
+    button:hover{ filter: brightness(1.03); }
+    button:active{ transform: translateY(1px) scale(.99); }
 
-    /* Toast 提示 */
+    .ghost{
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.92);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow:none;
+    }
+
+    /* 用於左卡與右卡的段落祝福 */
+    .fullText{
+      margin-top:10px;
+      white-space:pre-line;
+      line-height:1.75;
+      color: rgba(255,255,255,.92);
+      background: rgba(0,0,0,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      padding:12px 12px;
+    }
+
+    /* 中間留白（保護中央馬） */
+    .centerClear{
+      flex:1;
+      min-width: min(34vw, 520px);
+      height: min(70vh, 640px);
+      border-radius:24px;
+      background: transparent;
+      pointer-events:none;
+    }
+
+    /* Toast */
     #toast{
       position:fixed;
-      top: 50%; left:50%;
-      transform:translate(-50%, -50%) scale(0.9);
-      padding:12px 24px;
-      border-radius:50px;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #fbbf24;
-      font-weight: bold;
+      left:50%;
+      bottom:22px;
+      transform:translateX(-50%);
+      padding:10px 14px;
+      border-radius:16px;
+      background: rgba(0,0,0,.50);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      z-index: 10;
+      font-size: 14px;
       opacity:0;
+      transition: opacity .18s ease;
       pointer-events:none;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 100;
-    }
-    #toast.show{
-      opacity: 1;
-      transform:translate(-50%, -50%) scale(1);
     }
 
-    /* === 手機版響應式 === */
-    @media (max-width: 768px){
+    /* 手機：上下排列 */
+    @media (max-width: 980px){
       .wrap{
-        flex-direction: column;
-        justify-content: space-between; /* 上下分開 */
-        padding: 80px 20px 30px; /* 避開頂部燈籠 */
+        flex-direction:column;
+        justify-content:flex-start;
+        padding-top: 84px;
       }
-      
-      /* 左卡片改為頂部標題 */
-      .card-left{
-        width: 100%;
-        max-width: none;
-        background: transparent; /* 手機版頂部不要背景，避免遮擋 */
-        border: none;
-        box-shadow: none;
-        backdrop-filter: none;
-        padding: 0;
-        text-align: center;
-      }
-      .card-left .sub-title{
-        justify-content: center;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-      }
-      .card-left .sub-title::before{ display:none; }
-      
-      .tags-grid{
-        justify-content: center;
-      }
-      .tag{
-        background: rgba(0,0,0,0.4); /* 增加可讀性 */
-        backdrop-filter: blur(4px);
-      }
-
-      /* 右卡片改為底部操作區 */
-      .card-right{
-        width: 100%;
-        max-width: none;
-        background: rgba(20, 0, 0, 0.75); /* 手機版底部稍微深一點 */
-      }
-      
-      .lantern{ width: 50px; height: 80px; }
+      .centerClear{ display:none; }
+      .goldDustZone{ width: 34vw; }
     }
   </style>
 </head>
 
 <body>
+  <!-- 左右金粉區 -->
+  <div class="goldDustZone left" id="dustLeft"></div>
+  <div class="goldDustZone right" id="dustRight"></div>
 
-  <svg class="lantern left" viewBox="0 0 120 200">
-    <path d="M60 0 v30" stroke="rgba(255,255,255,.5)" stroke-width="4"/>
-    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="#d00" stroke="rgba(255,215,0,0.4)" stroke-width="2"/>
-    <path d="M35 80 h50 M35 105 h50" stroke="rgba(251,191,36,.6)" stroke-width="4" stroke-linecap="round"/>
-    <path d="M60 165 v25" stroke="rgba(255,255,255,.5)" stroke-width="4"/>
-    <circle cx="60" cy="195" r="5" fill="#fbbf24"/>
+  <!-- 左右燈籠 -->
+  <svg class="lantern left" viewBox="0 0 120 200" aria-hidden="true">
+    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.92)" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
+    <path d="M35 80 h50" stroke="rgba(251,191,36,.70)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M35 105 h50" stroke="rgba(251,191,36,.50)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.95)"/>
   </svg>
-  <svg class="lantern right" viewBox="0 0 120 200">
-    <use href=".lantern.left"/> <path d="M60 0 v30" stroke="rgba(255,255,255,.5)" stroke-width="4"/>
-    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="#d00" stroke="rgba(255,215,0,0.4)" stroke-width="2"/>
-    <path d="M35 80 h50 M35 105 h50" stroke="rgba(251,191,36,.6)" stroke-width="4" stroke-linecap="round"/>
-    <path d="M60 165 v25" stroke="rgba(255,255,255,.5)" stroke-width="4"/>
-    <circle cx="60" cy="195" r="5" fill="#fbbf24"/>
+
+  <svg class="lantern right" viewBox="0 0 120 200" aria-hidden="true">
+    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.90)" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
+    <path d="M35 80 h50" stroke="rgba(251,191,36,.70)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M35 105 h50" stroke="rgba(251,191,36,.50)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.95)"/>
+  </svg>
+
+  <svg class="lantern left low" viewBox="0 0 120 200" aria-hidden="true">
+    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.86)" stroke="rgba(255,255,255,.20)" stroke-width="4"/>
+    <path d="M35 90 h50" stroke="rgba(251,191,36,.58)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.92)"/>
+  </svg>
+
+  <svg class="lantern right low" viewBox="0 0 120 200" aria-hidden="true">
+    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.86)" stroke="rgba(255,255,255,.20)" stroke-width="4"/>
+    <path d="M35 90 h50" stroke="rgba(251,191,36,.58)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.92)"/>
   </svg>
 
   <canvas id="fx"></canvas>
-  <div id="toast">新年快樂 🎉</div>
+  <div id="toast"></div>
 
   <div class="wrap">
-    
-    <section class="glass-card card-left">
-      <div class="sub-title">HAPPY CHINESE NEW YEAR</div>
-      <div class="calligraphy-title">
-        <div>Stephin 給您</div>
-        <div style="font-size:1.2em; color:#fff;">拜年啦</div>
+    <!-- 左側卡片：✅ 改成你要的完整祝福 -->
+    <section class="sideCard" aria-label="祝福主卡">
+      <div class="head">
+        <div class="ribbon">🧧 新春到・喜氣到</div>
+
+        <div class="title" aria-label="Stephin給您拜年啦">
+          <span class="titleLine">Stephin 給您</span>
+          <span class="titleLine">拜年啦</span>
+        </div>
       </div>
-      <div class="tags-grid" style="margin-top:10px;">
-        <span class="tag">🧨 恭喜發財</span>
-        <span class="tag">🐴 龍馬精神</span>
-        <span class="tag">💰 日進斗金</span>
+
+      <div class="body">
+        <span class="badge">Stephin 祝福您</span>
+        <div class="bigLine">祝福您，恭喜發財・萬事如意</div>
+
+        <div class="fullText" style="margin-top:12px;">
+心想事成　龍馬精神　日進斗金<br>
+馬上發財　馬到成功
+        </div>
+
+        <div class="sig" style="margin-top:14px;">
+          <span style="opacity:.85">——</span>
+          <span class="name">Stephin</span>
+        </div>
       </div>
     </section>
 
-    <section class="glass-card card-right">
-      <div id="text-content" class="msg-box">
-        新的一年，願您像馬一樣，不受拘束，向著標竿奔跑。<br>
-        願您步伐堅定、心裡有光，把每個目標都跑成好消息。
-        <div style="margin-top:10px; text-align:right; font-family:'Ma Shan Zheng'; color:var(--gold);">—— Stephin</div>
-      </div>
-      
-      <div class="action-row">
-        <button id="btnFire" class="btn-primary">✨ 放煙火</button>
-        <button id="btnCopy" class="btn-ghost">複製祝福</button>
-      </div>
-    </section>
+    <!-- 中間留白（保護背景中央馬不要被擋） -->
+    <div class="centerClear" aria-hidden="true"></div>
 
+    <!-- 右側卡片（長祝福文） -->
+    <aside class="sideCard" aria-label="互動與祝福文">
+      <div class="head">
+        <div class="ribbon">🎆 一起熱鬧一下</div>
+        <div class="title" style="margin-top:10px;">
+          <span class="titleLine" style="font-size: clamp(22px, 2.4vw, 30px);">新年快樂</span>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="btnRow">
+          <button id="btnFire">放煙火</button>
+          <button id="btnCopy" class="ghost">複製祝福</button>
+        </div>
+
+        <div class="fullText" id="fullText">
+新的一年，願您像馬一樣，
+不受拘束，向著標竿奔跑。
+
+願您步伐堅定、心裡有光，
+把每個目標都跑成好消息。
+
+Stephin 敬上
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script>
-    // ===== UI 交互 =====
+    // ===== Toast =====
     const toastEl = document.getElementById("toast");
-    let toastTimer;
-    function showToast(msg){
+    let toastTimer = null;
+    function toast(msg){
       toastEl.textContent = msg;
-      toastEl.classList.add("show");
+      toastEl.style.opacity = "1";
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2000);
+      toastTimer = setTimeout(()=> toastEl.style.opacity = "0", 1400);
     }
 
-    // 複製功能
-    document.getElementById("btnCopy").addEventListener("click", async () => {
-      const text = document.getElementById("text-content").innerText.replace("—— Stephin", "").trim() + "\n—— Stephin 敬上";
-      try {
+    // ===== 複製祝福（複製右側祝福文） =====
+    const fullTextEl = document.getElementById("fullText");
+    async function copyBlessing(){
+      const text = fullTextEl.textContent.trim();
+      try{
         await navigator.clipboard.writeText(text);
-        showToast("已複製祝福語 ✅");
-      } catch (err) {
-        showToast("複製失敗 ❌");
+        toast("已複製祝福 ✅");
+      }catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("已複製祝福 ✅");
       }
-    });
+    }
+    document.getElementById("btnCopy").addEventListener("click", copyBlessing);
 
-    // 煙火按鈕
-    document.getElementById("btnFire").addEventListener("click", (e) => {
-      // 在螢幕隨機位置放煙火，而不是只在中間
-      const x = window.innerWidth * (0.3 + Math.random() * 0.4);
-      const y = window.innerHeight * (0.2 + Math.random() * 0.3);
-      firework(x, y);
-      firework(x + (Math.random()-0.5)*100, y + (Math.random()-0.5)*100);
-      showToast("新年快樂！🎆");
-      
-      // 按鈕點擊特效
-      e.target.style.transform = "scale(0.95)";
-      setTimeout(()=>e.target.style.transform = "", 150);
-    });
+    // ===== 金粉生成（左右兩側） =====
+    function makeDust(containerId, count){
+      const box = document.getElementById(containerId);
+      box.innerHTML = "";
+      for(let i=0;i<count;i++){
+        const s = document.createElement("span");
+        s.className = "dust";
+        const left = Math.random() * 100;
+        const size = 3 + Math.random() * 4;
+        const dur = 4 + Math.random() * 6;
+        const delay = -Math.random() * dur;
+        const drift = (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 36);
+        s.style.left = left + "%";
+        s.style.width = size + "px";
+        s.style.height = size + "px";
+        s.style.animationDuration = dur + "s";
+        s.style.animationDelay = delay + "s";
+        s.style.setProperty("--drift", drift + "px");
+        box.appendChild(s);
+      }
+    }
+    makeDust("dustLeft", 36);
+    makeDust("dustRight", 36);
 
-    // ===== 煙火邏輯 (優化版) =====
+    // ===== 煙火 / 彩紙 Canvas =====
     const canvas = document.getElementById('fx');
     const ctx = canvas.getContext('2d');
-    let W, H, dpr;
-    let particles = [];
+    let W=0, H=0, dpr=1;
 
     function resize(){
-      dpr = window.devicePixelRatio || 1;
-      W = canvas.width = window.innerWidth * dpr;
-      H = canvas.height = window.innerHeight * dpr;
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      W = canvas.width = Math.floor(innerWidth * dpr);
+      H = canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      ctx.setTransform(1,0,0,1,0,0);
     }
     window.addEventListener('resize', resize);
     resize();
 
-    function firework(x, y) {
-      const count = 80; // 粒子數量
-      const colors = ['#ff0040', '#ffeb3b', '#00e5ff', '#76ff03'];
-      
-      for(let i=0; i<count; i++){
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 6 + 2;
+    const particles = [];
+    function rand(a,b){ return a + Math.random()*(b-a); }
+
+    function burst(x, y, power=1){
+      const n = Math.floor(130 * power);
+      for(let i=0;i<n;i++){
+        const angle = rand(0, Math.PI*2);
+        const speed = rand(2.2, 10.5) * power;
         particles.push({
-          x: x * dpr,
-          y: y * dpr,
-          vx: Math.cos(angle) * speed * dpr,
-          vy: Math.sin(angle) * speed * dpr,
-          life: 1,
-          decay: Math.random() * 0.015 + 0.01,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          size: Math.random() * 3 * dpr
+          x, y,
+          vx: Math.cos(angle)*speed,
+          vy: Math.sin(angle)*speed - rand(0,2),
+          g: rand(0.06, 0.12),
+          life: rand(55, 125),
+          size: rand(1.2, 3.8) * dpr,
+          hue: rand(0, 360),
+          spin: rand(-0.25, 0.25),
+          rot: rand(0, Math.PI*2),
+          kind: Math.random() < 0.28 ? 'rect' : 'dot'
         });
       }
     }
 
-    function loop() {
-      // 拖尾效果
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = `rgba(0, 0, 0, 0.1)`;
-      ctx.fillRect(0, 0, W, H);
-      
-      ctx.globalCompositeOperation = 'lighter';
-      
-      for(let i=particles.length-1; i>=0; i--){
-        let p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.1 * dpr; // 重力
-        p.life -= p.decay;
-        
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-        ctx.fill();
+    function fireworkAtClient(clientX, clientY){
+      const x = clientX * dpr;
+      const y = clientY * dpr;
+      burst(x, y, 1);
+      setTimeout(()=>burst(x + rand(-70,70)*dpr, y + rand(-70,70)*dpr, 0.65), 120);
+    }
 
-        if(p.life <= 0) particles.splice(i, 1);
+    function loop(){
+      ctx.clearRect(0,0,W,H);
+      for(let i=particles.length-1;i>=0;i--){
+        const p = particles[i];
+        p.vy += p.g * dpr;
+        p.x += p.vx * dpr;
+        p.y += p.vy * dpr;
+        p.life -= 1;
+
+        const alpha = Math.max(0, Math.min(1, p.life/95));
+        ctx.globalAlpha = alpha;
+
+        ctx.fillStyle = `hsl(${p.hue} 90% 60%)`;
+        if(p.kind==='rect'){
+          p.rot += p.spin;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillRect(-p.size*1.2, -p.size*0.6, p.size*2.4, p.size*1.2);
+          ctx.restore();
+        }else{
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+          ctx.fill();
+        }
+
+        if(p.life <= 0 || p.y > H + 60*dpr) particles.splice(i,1);
       }
+      ctx.globalAlpha = 1;
       requestAnimationFrame(loop);
     }
     loop();
 
-    // 點擊背景放煙火
-    document.addEventListener('click', (e) => {
-      if(e.target.tagName !== 'BUTTON'){
-        firework(e.clientX, e.clientY);
+    document.getElementById('btnFire').addEventListener('click', ()=>{
+      fireworkAtClient(innerWidth*0.52, innerHeight*0.28);
+      toast("新年快樂！🎉");
+    });
+
+    document.addEventListener('click', (e)=>{
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+      if(tag === 'button') return;
+      fireworkAtClient(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.code === 'Space'){
+        e.preventDefault();
+        fireworkAtClient(rand(innerWidth*0.25, innerWidth*0.75), rand(innerHeight*0.18, innerHeight*0.55));
       }
     });
 
-    // 自動開場煙火
-    setTimeout(() => firework(window.innerWidth/2, window.innerHeight*0.3), 500);
-
+    setTimeout(()=>fireworkAtClient(innerWidth*0.52, innerHeight*0.30), 450);
   </script>
 </body>
 </html>
