@@ -23,16 +23,15 @@
     body{
       margin:0;
       height:100vh;
-      font-family: 'Noto Serif TC', "PingFang TC", "Microsoft JhengHei", serif; /* 改用宋體 */
+      font-family: 'Noto Serif TC', "PingFang TC", "Microsoft JhengHei", serif;
       color: var(--cream);
       overflow:hidden;
       background:
-        linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.0)), /* 稍微壓暗上方讓燈籠清楚 */
+        linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.0)),
         url("bg.jpg") center/cover no-repeat fixed;
       position: relative;
     }
 
-    /* 極簡金色邊框 (取代原本厚重的紅框) */
     body::after{
       content:"";
       position:fixed;
@@ -44,21 +43,19 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.2) inset;
     }
 
-    /* 煙火畫布 */
     canvas#fx{
       position:fixed;
       inset:0;
       width:100%;
       height:100%;
       pointer-events:none;
-      z-index:1; /* 最底層但在背景圖之上 */
+      z-index:1;
     }
 
-    /* 燈籠 (保留原本動畫，調整位置) */
     .lantern{
       position:fixed;
       top:-10px;
-      width:70px; /*稍微縮小一點，不搶戲*/
+      width:70px;
       filter: drop-shadow(0 10px 15px rgba(0,0,0,.5));
       transform-origin: 50% 0%;
       animation: sway 3.5s ease-in-out infinite;
@@ -72,21 +69,19 @@
       50%{ transform: rotate(4deg); }
     }
 
-    /* ===== 版面佈局 ===== */
     .container {
       position: relative;
       z-index: 5;
       width: 100%;
       height: 100vh;
-      pointer-events: none; /* 讓點擊穿透到背景放煙火 */
+      pointer-events: none;
     }
 
-    /* 左上角：豎排標題 (極省空間) */
     .vertical-title {
       position: absolute;
       top: 50px;
       left: 40px;
-      writing-mode: vertical-rl; /* 直書 */
+      writing-mode: vertical-rl;
       text-orientation: upright;
       font-weight: 900;
       letter-spacing: 0.1em;
@@ -96,9 +91,9 @@
 
     .v-line {
       display: inline-block;
-      margin-left: 12px; /* 直書時是左右間距 */
+      margin-left: 12px;
       padding: 12px 6px;
-      background: rgba(185, 28, 28, 0.85); /* 深紅底 */
+      background: rgba(185, 28, 28, 0.85);
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 8px;
       font-size: clamp(24px, 4vw, 32px);
@@ -107,14 +102,13 @@
     }
 
     .v-line.sub {
-      background: rgba(255, 247, 230, 0.9); /* 米白底 */
-      color: #881313; /* 紅字 */
+      background: rgba(255, 247, 230, 0.9);
+      color: #881313;
       font-size: clamp(16px, 2.5vw, 20px);
-      margin-top: 40px; /* 直書時這是向下位移 */
+      margin-top: 40px;
       height: fit-content;
     }
 
-    /* 右下角：互動卡片 (縮小、透明) */
     .interact-card {
       position: absolute;
       bottom: 40px;
@@ -152,7 +146,7 @@
       opacity: 0.9;
       margin-bottom: 16px;
       white-space: pre-line;
-      font-family: ui-sans-serif, system-ui, sans-serif; /* 內文用黑體比較好讀 */
+      font-family: ui-sans-serif, system-ui, sans-serif;
     }
 
     .btn-group {
@@ -186,7 +180,6 @@
     }
     .btn-ghost:hover { background: rgba(255,255,255,0.25); }
 
-    /* Toast */
     #toast {
       position: fixed;
       top: 50%;
@@ -204,7 +197,7 @@
       font-family: system-ui, sans-serif;
     }
 
-    /* ===== 新增：彈出圖片（3 秒後消失）===== */
+    /* 彈出圖片（3 秒後消失） */
     #popupOverlay{
       position: fixed;
       inset: 0;
@@ -234,9 +227,7 @@
       to   { opacity: 1; transform: scale(1); }
     }
 
-    /* 手機版適配 */
     @media (max-width: 600px) {
-      /* 手機上標題改為橫排，置於頂部 */
       .vertical-title {
         top: 20px;
         left: 0;
@@ -259,7 +250,6 @@
         font-size: 14px;
       }
 
-      /* 卡片置底 */
       .interact-card {
         bottom: 30px;
         right: 20px;
@@ -277,7 +267,7 @@
   <canvas id="fx"></canvas>
   <div id="toast"></div>
 
-  <!-- 新增：彈出圖片容器（注意：檔名大小寫要跟 repo 一樣：popup.JPG） -->
+  <!-- 彈出圖片容器（檔名大小寫要跟 repo 一樣：popup.JPG） -->
   <div id="popupOverlay" aria-hidden="true">
     <img id="popupImg" src="./popup.JPG" alt="恭喜發財祝福圖">
   </div>
@@ -305,7 +295,7 @@ Stephin 敬上</div>
   </div>
 
   <script>
-    // ===== Toast 提示 =====
+    // Toast
     const toastEl = document.getElementById("toast");
     let toastTimer;
     function showToast(msg){
@@ -315,15 +305,13 @@ Stephin 敬上</div>
       toastTimer = setTimeout(() => toastEl.style.opacity = "0", 1500);
     }
 
-    // ===== 新增：彈出圖片（3 秒後消失）=====
+    // 彈出圖片（3 秒後消失）
     const popupOverlay = document.getElementById("popupOverlay");
     const popupImg = document.getElementById("popupImg");
     let popupTimer = null;
 
     function showPopupFor3s(){
-      // 強制重新抓圖（避免 GitHub Pages / 瀏覽器快取到舊的 404）
-      popupImg.src = `./popup.JPG?v=${Date.now()}`;
-
+      popupImg.src = `./popup.JPG?v=${Date.now()}`; // 防快取
       popupOverlay.classList.add("show");
       popupOverlay.setAttribute("aria-hidden", "false");
 
@@ -334,7 +322,6 @@ Stephin 敬上</div>
       }, 3000);
     }
 
-    // 點彈窗可提前關閉（避免點一下就放煙火）
     popupOverlay.addEventListener("click", (e) => {
       e.stopPropagation();
       popupOverlay.classList.remove("show");
@@ -342,7 +329,7 @@ Stephin 敬上</div>
       clearTimeout(popupTimer);
     });
 
-    // ===== 複製功能（按下後：彈圖 3 秒 + 原本複製/Toast 不變）=====
+    // 複製祝福：彈圖 + 複製 + Toast
     document.getElementById("btnCopy").addEventListener("click", async () => {
       showPopupFor3s();
 
@@ -355,7 +342,7 @@ Stephin 敬上</div>
       }
     });
 
-    // ===== 煙火邏輯 (優化版) =====
+    // ===== 煙火 =====
     const canvas = document.getElementById('fx');
     const ctx = canvas.getContext('2d');
     let W, H, dpr;
@@ -389,18 +376,34 @@ Stephin 敬上</div>
       }
     }
 
+    // ✅ 讓煙火放完後「漸漸消失」
+    let idleFrames = 0; // 沒有粒子時累積，用來加強淡出
+
     function loop() {
-      // 拖尾效果
+      const cw = innerWidth;
+      const ch = innerHeight;
+
+      if (particles.length === 0) {
+        idleFrames = Math.min(idleFrames + 1, 60);
+      } else {
+        idleFrames = 0;
+      }
+
+      const fade = (particles.length > 0)
+        ? 0.10
+        : Math.min(0.35, 0.10 + idleFrames * 0.02);
+
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-      ctx.fillRect(0, 0, W/dpr, H/dpr);
+      ctx.fillStyle = `rgba(0, 0, 0, ${fade})`;
+      ctx.fillRect(0, 0, cw, ch);
+
       ctx.globalCompositeOperation = 'lighter';
 
       for (let i = particles.length - 1; i >= 0; i--) {
         let p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.05; // 重力
+        p.vy += 0.05;
         p.alpha -= p.decay;
 
         ctx.fillStyle = p.color;
@@ -411,11 +414,19 @@ Stephin 敬上</div>
 
         if (p.alpha <= 0) particles.splice(i, 1);
       }
+
+      ctx.globalAlpha = 1;
+
+      // 最後再清乾淨，避免殘影卡住
+      if (particles.length === 0 && idleFrames >= 55) {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.clearRect(0, 0, cw, ch);
+      }
+
       requestAnimationFrame(loop);
     }
     loop();
 
-    // 點擊互動
     document.getElementById('btnFire').addEventListener('click', (e) => {
       createFirework(innerWidth * 0.5, innerHeight * 0.3);
       createFirework(innerWidth * 0.3, innerHeight * 0.4);
@@ -426,12 +437,11 @@ Stephin 敬上</div>
 
     document.addEventListener('click', (e) => {
       if (popupOverlay.classList.contains('show')) return;
-      if(e.target.tagName !== 'BUTTON'){
+      if (e.target.tagName !== 'BUTTON') {
         createFirework(e.clientX, e.clientY);
       }
     });
 
-    // 自動放一個開場煙火
     setTimeout(() => createFirework(innerWidth * 0.5, innerHeight * 0.4), 500);
   </script>
 </body>
