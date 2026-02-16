@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>新春祝福｜新年快樂</title>
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#1b1140;
+      --card:#0f172aee;
+      --text:#e5e7eb;
+      --muted:#a1a1aa;
+      --gold:#fbbf24;
+      --red:#ef4444;
+      --green:#22c55e;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 20%, #2a1b66 0%, transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, #6b1a1a 0%, transparent 55%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+    canvas#fx{
+      position:fixed; inset:0; width:100%; height:100%;
+      pointer-events:none; z-index:1;
+    }
+    .wrap{
+      position:relative; z-index:2;
+      min-height:100vh; display:grid; place-items:center;
+      padding:24px;
+    }
+    .card{
+      width:min(920px, 100%);
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 22px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(90deg, rgba(251,191,36,.14), rgba(239,68,68,.12), rgba(34,197,94,.10));
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 12px; border-radius:999px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:14px; color:var(--muted);
+    }
+    .dot{width:10px;height:10px;border-radius:99px;background:var(--gold);box-shadow:0 0 18px rgba(251,191,36,.9);}
+    .content{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:18px;
+      padding:22px;
+    }
+    @media (max-width: 860px){ .content{grid-template-columns:1fr} }
+
+    .hero h1{
+      margin:8px 0 6px;
+      font-size: clamp(34px, 4vw, 54px);
+      letter-spacing:.02em;
+      line-height:1.1;
+    }
+    .hero h1 .gold{color:var(--gold);text-shadow:0 0 22px rgba(251,191,36,.35);}
+    .hero p{margin:10px 0 0;color:var(--muted);font-size:16px;line-height:1.7;}
+    .row{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    input{
+      flex:1 1 220px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
+    }
+    input:focus{border-color: rgba(251,191,36,.55);box-shadow:0 0 0 4px rgba(251,191,36,.14);}
+    button{
+      cursor:pointer; border:none;
+      padding:12px 16px; border-radius:14px;
+      font-weight:700; color:#0b1020;
+      background: linear-gradient(135deg, var(--gold), #fde68a);
+      box-shadow: 0 14px 30px rgba(251,191,36,.18);
+      transition: transform .08s ease, filter .15s ease;
+    }
+    button:hover{filter:brightness(1.05)}
+    button:active{transform: translateY(1px) scale(.99)}
+    .subbtn{
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:none;
+      font-weight:600;
+    }
+
+    .wish{
+      margin-top:16px;
+      padding:16px 16px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .wish .big{font-size: clamp(22px, 2.5vw, 30px);font-weight:900;letter-spacing:.03em;margin:0 0 6px;}
+    .wish .small{margin:0;color:var(--muted);line-height:1.6;}
+    .shine{
+      position:absolute; inset:-40% -60%;
+      background: linear-gradient(90deg, transparent, rgba(251,191,36,.18), transparent);
+      transform: rotate(18deg);
+      animation: shine 3.6s linear infinite;
+    }
+    @keyframes shine{0%{transform:translateX(-40%) rotate(18deg)}100%{transform:translateX(40%) rotate(18deg)}}
+
+    .art{
+      display:grid; place-items:center;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.12);
+      background: radial-gradient(500px 260px at 50% 30%, rgba(251,191,36,.16), transparent 60%),
+                  radial-gradient(520px 280px at 50% 70%, rgba(239,68,68,.12), transparent 60%),
+                  rgba(0,0,0,.18);
+      padding:18px;
+      min-height:340px;
+      position:relative;
+      overflow:hidden;
+    }
+    .lantern{
+      position:absolute; top:-20px; width:74px; height:120px;
+      opacity:.92; filter: drop-shadow(0 10px 20px rgba(0,0,0,.55));
+      animation: sway 3.2s ease-in-out infinite;
+      transform-origin:50% 0%;
+    }
+    .lantern.l1{left:18px; animation-delay:-.9s}
+    .lantern.l2{right:18px; animation-delay:-1.6s}
+    @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+    .fu{
+      width:min(360px, 86%);
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,.55));
+      transform-origin: 50% 60%;
+      animation: bob 2.3s ease-in-out infinite;
+    }
+    @keyframes bob{0%,100%{transform: translateY(0px) rotate(-.4deg)}50%{transform: translateY(-8px) rotate(.7deg)}}
+
+    .footer{
+      padding:14px 22px 20px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:13px;
+      border-top:1px solid rgba(255,255,255,.10);
+    }
+    .kbd{
+      padding:2px 8px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size:12px;
+    }
+  </style>
+</head>
+
+<body>
+<canvas id="fx"></canvas>
+
+<div class="wrap">
+  <div class="card" role="main" aria-label="新春祝福卡">
+    <div class="topbar">
+      <div class="badge"><span class="dot"></span> 新春祝福（離線也能打開）</div>
+      <div class="badge">點一下／按 <span class="kbd">Space</span> 放煙火</div>
+    </div>
+
+    <div class="content">
+      <div class="hero">
+        <h1><span class="gold">新年快樂</span> 🧧🎉</h1>
+        <p>
+          輸入名字，按一下就會生成專屬「過年祝福」。這頁放到 GitHub Pages 後，
+          你就能直接分享網址給大家點開。
+        </p>
+
+        <div class="row" style="margin-top:18px">
+          <input id="name" maxlength="18" placeholder="輸入名字（例如：小明 / Alice）" />
+          <button id="btnWish">送上祝福</button>
+          <button id="btnCopy" class="subbtn">複製祝福文字</button>
+        </div>
+
+        <div class="wish" aria-live="polite">
+          <div class="shine" aria-hidden="true"></div>
+          <p class="big" id="wishBig">祝你新年快樂！</p>
+          <p class="small" id="wishSmall">願你闔家平安、萬事如意、財源廣進、福氣滿滿。</p>
+        </div>
+
+        <div class="row">
+          <button id="btnFire" class="subbtn">🎆 再來一次煙火</button>
+          <button id="btnReset" class="subbtn">↺ 重置</button>
+        </div>
+      </div>
+
+      <div class="art" aria-hidden="true">
+        <!-- 燈籠 -->
+        <svg class="lantern l1" viewBox="0 0 120 200">
+          <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.9)" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
+          <path d="M35 80 h50" stroke="rgba(251,191,36,.65)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M35 105 h50" stroke="rgba(251,191,36,.45)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.9)"/>
+        </svg>
+
+        <svg class="lantern l2" viewBox="0 0 120 200">
+          <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.88)" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
+          <path d="M35 80 h50" stroke="rgba(251,191,36,.65)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M35 105 h50" stroke="rgba(251,191,36,.45)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.9)"/>
+        </svg>
+
+        <!-- 大「福」 -->
+        <svg class="fu" viewBox="0 0 600 420">
+          <defs>
+            <linearGradient id="gold" x1="0" x2="1">
+              <stop offset="0" stop-color="#fbbf24" stop-opacity=".98"/>
+              <stop offset="1" stop-color="#fde68a" stop-opacity=".98"/>
+            </linearGradient>
+          </defs>
+
+          <ellipse cx="300" cy="360" rx="210" ry="34" fill="rgba(0,0,0,.35)"/>
+          <ellipse cx="300" cy="356" rx="190" ry="26" fill="rgba(251,191,36,.08)"/>
+
+          <rect x="145" y="65" width="310" height="290" rx="28"
+                fill="rgba(239,68,68,.90)" stroke="rgba(255,255,255,.18)" stroke-width="8"/>
+          <rect x="170" y="90" width="260" height="240" rx="22"
+                fill="rgba(0,0,0,.18)" stroke="rgba(251,191,36,.55)" stroke-width="6"/>
+
+          <!-- 盡量用系統中文字型顯示「福」 -->
+          <text x="300" y="270" text-anchor="middle"
+                font-size="190" font-weight="900"
+                fill="url(#gold)"
+                style="font-family: 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;">
+            福
+          </text>
+
+          <!-- 小印章 -->
+          <rect x="380" y="255" width="58" height="58" rx="10"
+                fill="rgba(251,191,36,.25)" stroke="rgba(251,191,36,.65)" stroke-width="4"/>
+          <text x="409" y="297" text-anchor="middle"
+                font-size="26" font-weight="800"
+                fill="rgba(251,191,36,.9)"
+                style="font-family: 'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;">
+            春
+          </text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>提示：也能把這個檔案直接傳給別人（離線打開）。</div>
+      <div>分享網址：把它放到 <span class="kbd">GitHub Pages</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== 祝福文字（隨機組合） =====
+  const nameEl = document.getElementById('name');
+  const wishBig = document.getElementById('wishBig');
+  const wishSmall = document.getElementById('wishSmall');
+
+  const templates = [
+    ["新年快樂", "恭喜發財，財源廣進", "闔家平安，萬事如意"],
+    ["新春大吉", "福星高照，好運連連", "心想事成，事事順心"],
+    ["過年好", "年年有餘，步步高升", "身體健康，笑口常開"],
+    ["新年快樂", "金銀滿屋，喜氣盈門", "工作順利，生活甜甜"]
+  ];
+
+  function buildWish(name){
+    const who = name ? `祝 ${name} ` : "祝你 ";
+    const t = templates[Math.floor(Math.random() * templates.length)];
+    const line1 = `${who}${t[0]}！🧧`;
+    const line2 = `願你 ${t[1]}；${t[2]}。`;
+    const line3 = "新的一年，平安喜樂、福氣滿滿！🎉";
+    return [line1, line2, line3];
+  }
+
+  function setWish(){
+    const name = (nameEl.value || '').trim();
+    const [l1, l2, l3] = buildWish(name);
+    wishBig.textContent = l1;
+    wishSmall.textContent = `${l2} ${l3}`;
+  }
+
+  // ===== 複製 =====
+  async function copyWish(){
+    const name = (nameEl.value || '').trim();
+    const [l1, l2, l3] = buildWish(name);
+    const text = `${l1}\n${l2}\n${l3}`;
+    try{
+      await navigator.clipboard.writeText(text);
+      toast('已複製祝福文字 ✅');
+    }catch(e){
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      toast('已複製祝福文字 ✅');
+    }
+  }
+
+  // ===== Toast =====
+  let toastTimer = null;
+  function toast(msg){
+    let el = document.getElementById('toast');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'toast';
+      el.style.position='fixed';
+      el.style.left='50%';
+      el.style.bottom='22px';
+      el.style.transform='translateX(-50%)';
+      el.style.padding='10px 14px';
+      el.style.borderRadius='14px';
+      el.style.background='rgba(0,0,0,.55)';
+      el.style.border='1px solid rgba(255,255,255,.14)';
+      el.style.backdropFilter='blur(8px)';
+      el.style.color='#e5e7eb';
+      el.style.zIndex='9';
+      el.style.fontSize='14px';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.style.opacity='1';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>{ el.style.opacity='0'; }, 1600);
+  }
+
+  // ===== 煙火 / 彩紙 Canvas =====
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d');
+  let W=0,H=0,dpr=1;
+  function resize(){
+    dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    W = canvas.width = Math.floor(innerWidth * dpr);
+    H = canvas.height = Math.floor(innerHeight * dpr);
+    canvas.style.width = innerWidth + 'px';
+    canvas.style.height = innerHeight + 'px';
+    ctx.setTransform(1,0,0,1,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const particles = [];
+  function rand(a,b){ return a + Math.random()*(b-a); }
+
+  function burst(x, y, power=1){
+    const n = Math.floor(120 * power);
+    for(let i=0;i<n;i++){
+      const angle = rand(0, Math.PI*2);
+      const speed = rand(2, 10) * power;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed - rand(0,2),
+        g: rand(0.06, 0.12),
+        life: rand(50, 110),
+        size: rand(1.2, 3.4) * dpr,
+        hue: rand(0, 360),
+        spin: rand(-0.25, 0.25),
+        rot: rand(0, Math.PI*2),
+        kind: Math.random() < 0.25 ? 'rect' : 'dot'
+      });
+    }
+  }
+
+  function fireworkAtClient(clientX, clientY){
+    const x = clientX * dpr;
+    const y = clientY * dpr;
+    burst(x, y, 1);
+    setTimeout(()=>burst(x + rand(-60,60)*dpr, y + rand(-60,60)*dpr, 0.65), 120);
+  }
+
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.vy += p.g * dpr;
+      p.x += p.vx * dpr;
+      p.y += p.vy * dpr;
+      p.life -= 1;
+
+      const alpha = Math.max(0, Math.min(1, p.life/90));
+      ctx.globalAlpha = alpha;
+
+      ctx.fillStyle = `hsl(${p.hue} 90% 60%)`;
+      if(p.kind==='rect'){
+        p.rot += p.spin;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillRect(-p.size*1.2, -p.size*0.6, p.size*2.4, p.size*1.2);
+        ctx.restore();
+      }else{
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      if(p.life <= 0 || p.y > H + 40*dpr) particles.splice(i,1);
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  // ===== 互動 =====
+  document.getElementById('btnWish').addEventListener('click', ()=>{
+    setWish();
+    fireworkAtClient(innerWidth*0.5, innerHeight*0.32);
+    toast('新年快樂！🎉');
+  });
+  document.getElementById('btnCopy').addEventListener('click', copyWish);
+  document.getElementById('btnFire').addEventListener('click', ()=>{
+    fireworkAtClient(rand(innerWidth*0.25, innerWidth*0.75), rand(innerHeight*0.18, innerHeight*0.55));
+  });
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    nameEl.value = '';
+    setWish();
+    toast('已重置');
+  });
+
+  document.addEventListener('click', (e)=>{
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    if(tag === 'button' || tag === 'input') return;
+    fireworkAtClient(e.clientX, e.clientY);
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.code === 'Space'){
+      e.preventDefault();
+      fireworkAtClient(rand(innerWidth*0.2, innerWidth*0.8), rand(innerHeight*0.18, innerHeight*0.55));
+    }
+    if(e.key === 'Enter' && document.activeElement === nameEl){
+      setWish();
+      fireworkAtClient(innerWidth*0.5, innerHeight*0.32);
+    }
+  });
+
+  // 初始
+  setWish();
+  setTimeout(()=>fireworkAtClient(innerWidth*0.5, innerHeight*0.35), 400);
+</script>
+</body>
+</html>
