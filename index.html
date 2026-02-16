@@ -2,52 +2,46 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Stephin給您拜年啦</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --cream:#fff7e6;
-      --gold:#fbbf24;
-      --red:#ef4444;
-      --shadow:rgba(0,0,0,.35);
-      --stroke:rgba(255,255,255,.16);
+      --gold:#fcd34d;
+      --red:#dc2626;
+      --glass-bg: rgba(0, 0, 0, 0.25);
+      --glass-border: rgba(255, 255, 255, 0.2);
     }
 
     *{ box-sizing:border-box; }
 
     body{
       margin:0;
-      min-height:100vh;
-      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      height:100vh;
+      font-family: 'Noto Serif TC', "PingFang TC", "Microsoft JhengHei", serif; /* 改用宋體 */
       color: var(--cream);
       overflow:hidden;
       background:
-        radial-gradient(1200px 800px at 50% 28%, rgba(0,0,0,.10), rgba(0,0,0,.45)),
+        linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.0)), /* 稍微壓暗上方讓燈籠清楚 */
         url("bg.jpg") center/cover no-repeat fixed;
+      position: relative;
     }
 
-    /* 紅色邊框 */
-    body::before{
-      content:"";
-      position:fixed;
-      inset:14px;
-      border-radius:28px;
-      border:6px solid rgba(239,68,68,.78);
-      box-shadow:
-        0 0 0 2px rgba(251,191,36,.18) inset,
-        0 22px 70px rgba(0,0,0,.30);
-      pointer-events:none;
-      z-index:2;
-    }
+    /* 極簡金色邊框 (取代原本厚重的紅框) */
     body::after{
       content:"";
       position:fixed;
-      inset:24px;
-      border-radius:22px;
-      border:1px solid rgba(251,191,36,.18);
+      inset:10px;
+      border:1px solid rgba(251,191,36, 0.4);
+      border-radius:12px;
       pointer-events:none;
       z-index:2;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2) inset;
     }
 
     /* 煙火畫布 */
@@ -57,489 +51,323 @@
       width:100%;
       height:100%;
       pointer-events:none;
-      z-index:6;
+      z-index:1; /* 最底層但在背景圖之上 */
     }
 
-    /* 左右金粉（只在兩側） */
-    .goldDustZone{
-      position:fixed;
-      top:0; bottom:0;
-      width:min(26vw, 360px);
-      pointer-events:none;
-      z-index:3;
-      overflow:hidden;
-    }
-    .goldDustZone.left{ left:0; }
-    .goldDustZone.right{ right:0; }
-
-    .dust{
-      position:absolute;
-      top:-20px;
-      width:6px; height:6px;
-      border-radius:99px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(251,191,36,.95), rgba(251,191,36,.18));
-      box-shadow: 0 0 16px rgba(251,191,36,.30);
-      opacity:.95;
-      animation-name: dustFall;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-    }
-    @keyframes dustFall{
-      0%   { transform: translateY(-30px) translateX(0px); opacity:0; }
-      10%  { opacity: .95; }
-      100% { transform: translateY(calc(100vh + 60px)) translateX(var(--drift)); opacity:0; }
-    }
-
-    /* 燈籠（左右兩側） */
+    /* 燈籠 (保留原本動畫，調整位置) */
     .lantern{
       position:fixed;
-      top:-18px;
-      width:82px;
-      height:130px;
-      opacity:.95;
-      filter: drop-shadow(0 12px 20px rgba(0,0,0,.45));
+      top:-10px;
+      width:70px; /*稍微縮小一點，不搶戲*/
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,.5));
       transform-origin: 50% 0%;
-      animation: sway 3.2s ease-in-out infinite;
+      animation: sway 3.5s ease-in-out infinite;
       z-index:4;
       pointer-events:none;
     }
-    .lantern.left{ left:18px; }
-    .lantern.right{ right:18px; animation-delay:-1.3s; }
-    .lantern.left.low{ top:160px; left:26px; width:68px; height:110px; opacity:.9; animation-delay:-.6s; }
-    .lantern.right.low{ top:170px; right:30px; width:68px; height:110px; opacity:.9; animation-delay:-1.9s; }
+    .lantern.left{ left:20px; }
+    .lantern.right{ right:20px; animation-delay:-1.3s; }
     @keyframes sway{
-      0%,100%{ transform: rotate(-3deg); }
-      50%{ transform: rotate(3deg); }
+      0%,100%{ transform: rotate(-4deg); }
+      50%{ transform: rotate(4deg); }
     }
 
-    /* 版面：左右兩側卡片，中間留白 */
-    .wrap{
-      position:relative;
-      z-index:5;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:18px;
-      padding:24px;
+    /* ===== 版面佈局 ===== */
+    .container {
+      position: relative;
+      z-index: 5;
+      width: 100%;
+      height: 100vh;
+      pointer-events: none; /* 讓點擊穿透到背景放煙火 */
     }
 
-    /* 透明卡片 */
-    .sideCard{
-      width:min(380px, 92vw);
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(0,0,0,.14), rgba(0,0,0,.08));
-      backdrop-filter: blur(14px);
-      box-shadow: 0 22px 60px rgba(0,0,0,.25);
-      overflow:hidden;
+    /* 左上角：豎排標題 (極省空間) */
+    .vertical-title {
+      position: absolute;
+      top: 50px;
+      left: 40px;
+      writing-mode: vertical-rl; /* 直書 */
+      text-orientation: upright;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      pointer-events: auto;
     }
 
-    .sideCard .head{
-      padding:18px 18px 14px;
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: linear-gradient(90deg, rgba(239,68,68,.14), rgba(251,191,36,.10), rgba(239,68,68,.12));
+    .v-line {
+      display: inline-block;
+      margin-left: 12px; /* 直書時是左右間距 */
+      padding: 12px 6px;
+      background: rgba(185, 28, 28, 0.85); /* 深紅底 */
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      font-size: clamp(24px, 4vw, 32px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(4px);
+    }
+    
+    .v-line.sub {
+      background: rgba(255, 247, 230, 0.9); /* 米白底 */
+      color: #881313; /* 紅字 */
+      font-size: clamp(16px, 2.5vw, 20px);
+      margin-top: 40px; /* 直書時這是向下位移 */
+      height: fit-content;
     }
 
-    .ribbon{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      padding:9px 12px;
-      border-radius:999px;
-      background: rgba(0,0,0,.16);
-      border: 1px solid rgba(255,255,255,.14);
-      font-weight:900;
-      letter-spacing:.02em;
-      color: rgba(255,255,255,.92);
+    /* 右下角：互動卡片 (縮小、透明) */
+    .interact-card {
+      position: absolute;
+      bottom: 40px;
+      right: 30px;
+      width: min(320px, 85vw);
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      pointer-events: auto;
+      text-align: left;
+      transition: transform 0.2s;
     }
 
-    /* 更自然的標題排版 */
-    .title{
-      margin:12px 0 0;
-      line-height:1.10;
-      letter-spacing:.01em;
-      text-shadow: 0 10px 26px rgba(0,0,0,.30);
-      font-weight:1000;
-    }
-    .titleLine{
-      display:block;
-      font-size: clamp(30px, 3.4vw, 44px);
-      white-space: nowrap;
-    }
-    .titleLine + .titleLine{ margin-top:6px; }
-    @media (min-width: 560px){
-      .titleLine{ display:inline; }
-      .titleLine + .titleLine{ margin-top:0; }
-      .title{ font-size: clamp(30px, 3.2vw, 42px); }
+    .interact-card:hover {
+      background: rgba(0, 0, 0, 0.4);
     }
 
-    .body{ padding:16px 18px 18px; }
-
-    .badge{
-      display:inline-block;
-      padding:5px 10px;
-      border-radius:999px;
-      background: rgba(251,191,36,.12);
-      border: 1px solid rgba(251,191,36,.24);
-      color: rgba(255,255,255,.92);
-      font-weight:1000;
-      font-size:12px;
-      letter-spacing:.06em;
-      margin-bottom:10px;
+    .msg-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .bigLine{
-      margin:6px 0 10px;
-      font-size: clamp(20px, 2.2vw, 28px);
-      font-weight:1000;
-      letter-spacing:.06em;
-      color:#fff;
-      text-shadow: 0 12px 24px rgba(0,0,0,.28);
-      line-height:1.25;
+    .msg-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin-bottom: 16px;
+      white-space: pre-line;
+      font-family: ui-sans-serif, system-ui, sans-serif; /* 內文用黑體比較好讀 */
     }
 
-    .btnRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
+    .btn-group {
+      display: flex;
+      gap: 10px;
     }
 
-    button{
-      cursor:pointer;
-      border:none;
-      padding:12px 14px;
-      border-radius:16px;
-      font-weight:1000;
-      color: #2b1b09;
-      background: linear-gradient(135deg, var(--gold), #fde68a);
-      box-shadow: 0 14px 30px rgba(251,191,36,.14);
-      transition: transform .08s ease, filter .15s ease;
-      flex: 1 1 150px;
-    }
-    button:hover{ filter: brightness(1.03); }
-    button:active{ transform: translateY(1px) scale(.99); }
-
-    .ghost{
-      background: rgba(255,255,255,.08);
-      color: rgba(255,255,255,.92);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow:none;
+    button {
+      cursor: pointer;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      transition: all 0.2s;
+      flex: 1;
     }
 
-    /* 用於左卡與右卡的段落祝福 */
-    .fullText{
-      margin-top:10px;
-      white-space:pre-line;
-      line-height:1.75;
-      color: rgba(255,255,255,.92);
-      background: rgba(0,0,0,.08);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius:16px;
-      padding:12px 12px;
+    .btn-primary {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #451a03;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
     }
+    .btn-primary:hover { filter: brightness(1.1); transform:translateY(-1px); }
+    .btn-primary:active { transform:scale(0.98); }
 
-    /* 中間留白（保護中央馬） */
-    .centerClear{
-      flex:1;
-      min-width: min(34vw, 520px);
-      height: min(70vh, 640px);
-      border-radius:24px;
-      background: transparent;
-      pointer-events:none;
+    .btn-ghost {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
     }
+    .btn-ghost:hover { background: rgba(255,255,255,0.25); }
 
     /* Toast */
-    #toast{
-      position:fixed;
-      left:50%;
-      bottom:22px;
-      transform:translateX(-50%);
-      padding:10px 14px;
-      border-radius:16px;
-      background: rgba(0,0,0,.50);
-      border: 1px solid rgba(255,255,255,.14);
-      backdrop-filter: blur(8px);
+    #toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 24px;
+      border-radius: 50px;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
       color: #fff;
-      z-index: 10;
-      font-size: 14px;
-      opacity:0;
-      transition: opacity .18s ease;
-      pointer-events:none;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      font-family: system-ui, sans-serif;
     }
 
-    /* 手機：上下排列 */
-    @media (max-width: 980px){
-      .wrap{
-        flex-direction:column;
-        justify-content:flex-start;
-        padding-top: 84px;
+    /* 手機版適配 */
+    @media (max-width: 600px) {
+      /* 手機上標題改為橫排，置於頂部 */
+      .vertical-title {
+        top: 20px;
+        left: 0; 
+        right: 0;
+        text-align: center;
+        writing-mode: horizontal-tb;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        pointer-events: none;
       }
-      .centerClear{ display:none; }
-      .goldDustZone{ width: 34vw; }
+      .v-line {
+        margin: 4px 0;
+        padding: 6px 16px;
+        display: inline-block;
+        font-size: 20px;
+      }
+      .v-line.sub {
+        margin-top: 0;
+        font-size: 14px;
+      }
+
+      /* 卡片置底 */
+      .interact-card {
+        bottom: 30px;
+        right: 20px;
+        left: 20px;
+        width: auto;
+      }
     }
   </style>
 </head>
 
 <body>
-  <!-- 左右金粉區 -->
-  <div class="goldDustZone left" id="dustLeft"></div>
-  <div class="goldDustZone right" id="dustRight"></div>
-
-  <!-- 左右燈籠 -->
-  <svg class="lantern left" viewBox="0 0 120 200" aria-hidden="true">
-    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
-    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.92)" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
-    <path d="M35 80 h50" stroke="rgba(251,191,36,.70)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M35 105 h50" stroke="rgba(251,191,36,.50)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.95)"/>
-  </svg>
-
-  <svg class="lantern right" viewBox="0 0 120 200" aria-hidden="true">
-    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
-    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.90)" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
-    <path d="M35 80 h50" stroke="rgba(251,191,36,.70)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M35 105 h50" stroke="rgba(251,191,36,.50)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.95)"/>
-  </svg>
-
-  <svg class="lantern left low" viewBox="0 0 120 200" aria-hidden="true">
-    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
-    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.86)" stroke="rgba(255,255,255,.20)" stroke-width="4"/>
-    <path d="M35 90 h50" stroke="rgba(251,191,36,.58)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.92)"/>
-  </svg>
-
-  <svg class="lantern right low" viewBox="0 0 120 200" aria-hidden="true">
-    <path d="M60 0 v30" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M35 30 h50" stroke="rgba(255,255,255,.28)" stroke-width="8" stroke-linecap="round"/>
-    <path d="M25 55 C25 35,95 35,95 55 v80 C95 165,25 165,25 135 Z" fill="rgba(239,68,68,.86)" stroke="rgba(255,255,255,.20)" stroke-width="4"/>
-    <path d="M35 90 h50" stroke="rgba(251,191,36,.58)" stroke-width="6" stroke-linecap="round"/>
-    <path d="M60 165 v25" stroke="rgba(255,255,255,.35)" stroke-width="6" stroke-linecap="round"/>
-    <circle cx="60" cy="195" r="6" fill="rgba(251,191,36,.92)"/>
-  </svg>
+  <svg class="lantern left" viewBox="0 0 120 200"><path d="M60 0 v30" stroke="rgba(255,255,255,.5)" stroke-width="4"/><path d="M25 45 C25 25,95 25,95 45 v80 C95 155,25 155,25 125 Z" fill="#ef4444" stroke="#fcd34d" stroke-width="3"/><path d="M60 155 v30" stroke="rgba(255,255,255,.5)" stroke-width="4"/><circle cx="60" cy="190" r="5" fill="#fbbf24"/></svg>
+  <svg class="lantern right" viewBox="0 0 120 200"><path d="M60 0 v30" stroke="rgba(255,255,255,.5)" stroke-width="4"/><path d="M25 45 C25 25,95 25,95 45 v80 C95 155,25 155,25 125 Z" fill="#ef4444" stroke="#fcd34d" stroke-width="3"/><path d="M60 155 v30" stroke="rgba(255,255,255,.5)" stroke-width="4"/><circle cx="60" cy="190" r="5" fill="#fbbf24"/></svg>
 
   <canvas id="fx"></canvas>
   <div id="toast"></div>
 
-  <div class="wrap">
-    <!-- 左側卡片：✅ 改成你要的完整祝福 -->
-    <section class="sideCard" aria-label="祝福主卡">
-      <div class="head">
-        <div class="ribbon">🧧 新春到・喜氣到</div>
+  <div class="container">
+    <div class="vertical-title">
+      <div class="v-line">Stephin 給您拜年啦</div>
+      <div class="v-line sub">恭喜發財．萬事如意</div>
+    </div>
 
-        <div class="title" aria-label="Stephin給您拜年啦">
-          <span class="titleLine">Stephin 給您</span>
-          <span class="titleLine">拜年啦</span>
-        </div>
+    <div class="interact-card">
+      <div class="msg-title">🧧 新年祝福</div>
+      <div class="msg-text" id="blessingText">願您新的一年，
+步伐堅定，心裡有光。
+像馬兒一樣，
+奔向目標，馬到成功！
+
+Stephin 敬上</div>
+      
+      <div class="btn-group">
+        <button class="btn-primary" id="btnFire">✨ 放煙火</button>
+        <button class="btn-ghost" id="btnCopy">複製祝福</button>
       </div>
-
-      <div class="body">
-        <span class="badge">Stephin 祝福您</span>
-        <div class="bigLine">祝福您，恭喜發財・萬事如意</div>
-
-        <div class="fullText" style="margin-top:12px;">
-心想事成　龍馬精神　日進斗金<br>
-馬上發財　馬到成功
-        </div>
-
-        <div class="sig" style="margin-top:14px;">
-          <span style="opacity:.85">——</span>
-          <span class="name">Stephin</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 中間留白（保護背景中央馬不要被擋） -->
-    <div class="centerClear" aria-hidden="true"></div>
-
-    <!-- 右側卡片（長祝福文） -->
-    <aside class="sideCard" aria-label="互動與祝福文">
-      <div class="head">
-        <div class="ribbon">🎆 一起熱鬧一下</div>
-        <div class="title" style="margin-top:10px;">
-          <span class="titleLine" style="font-size: clamp(22px, 2.4vw, 30px);">新年快樂</span>
-        </div>
-      </div>
-
-      <div class="body">
-        <div class="btnRow">
-          <button id="btnFire">放煙火</button>
-          <button id="btnCopy" class="ghost">複製祝福</button>
-        </div>
-
-        <div class="fullText" id="fullText">
-新的一年，願您像馬一樣，
-不受拘束，向著標竿奔跑。
-
-願您步伐堅定、心裡有光，
-把每個目標都跑成好消息。
-
-Stephin 敬上
-        </div>
-      </div>
-    </aside>
+    </div>
   </div>
 
   <script>
-    // ===== Toast =====
+    // ===== Toast 提示 =====
     const toastEl = document.getElementById("toast");
-    let toastTimer = null;
-    function toast(msg){
+    let toastTimer;
+    function showToast(msg){
       toastEl.textContent = msg;
       toastEl.style.opacity = "1";
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=> toastEl.style.opacity = "0", 1400);
+      toastTimer = setTimeout(() => toastEl.style.opacity = "0", 1500);
     }
 
-    // ===== 複製祝福（複製右側祝福文） =====
-    const fullTextEl = document.getElementById("fullText");
-    async function copyBlessing(){
-      const text = fullTextEl.textContent.trim();
-      try{
+    // ===== 複製功能 =====
+    document.getElementById("btnCopy").addEventListener("click", async () => {
+      const text = document.getElementById("blessingText").textContent;
+      try {
         await navigator.clipboard.writeText(text);
-        toast("已複製祝福 ✅");
-      }catch(e){
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-        toast("已複製祝福 ✅");
+        showToast("已複製祝福語 ✅");
+      } catch(e) {
+        showToast("複製失敗，請手動複製");
       }
-    }
-    document.getElementById("btnCopy").addEventListener("click", copyBlessing);
+    });
 
-    // ===== 金粉生成（左右兩側） =====
-    function makeDust(containerId, count){
-      const box = document.getElementById(containerId);
-      box.innerHTML = "";
-      for(let i=0;i<count;i++){
-        const s = document.createElement("span");
-        s.className = "dust";
-        const left = Math.random() * 100;
-        const size = 3 + Math.random() * 4;
-        const dur = 4 + Math.random() * 6;
-        const delay = -Math.random() * dur;
-        const drift = (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 36);
-        s.style.left = left + "%";
-        s.style.width = size + "px";
-        s.style.height = size + "px";
-        s.style.animationDuration = dur + "s";
-        s.style.animationDelay = delay + "s";
-        s.style.setProperty("--drift", drift + "px");
-        box.appendChild(s);
-      }
-    }
-    makeDust("dustLeft", 36);
-    makeDust("dustRight", 36);
-
-    // ===== 煙火 / 彩紙 Canvas =====
+    // ===== 煙火邏輯 (優化版) =====
     const canvas = document.getElementById('fx');
     const ctx = canvas.getContext('2d');
-    let W=0, H=0, dpr=1;
+    let W, H, dpr;
+    let particles = [];
 
     function resize(){
-      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      W = canvas.width = Math.floor(innerWidth * dpr);
-      H = canvas.height = Math.floor(innerHeight * dpr);
+      dpr = window.devicePixelRatio || 1;
+      W = canvas.width = innerWidth * dpr;
+      H = canvas.height = innerHeight * dpr;
       canvas.style.width = innerWidth + 'px';
       canvas.style.height = innerHeight + 'px';
-      ctx.setTransform(1,0,0,1,0,0);
+      ctx.scale(dpr, dpr);
     }
     window.addEventListener('resize', resize);
     resize();
 
-    const particles = [];
-    function rand(a,b){ return a + Math.random()*(b-a); }
-
-    function burst(x, y, power=1){
-      const n = Math.floor(130 * power);
-      for(let i=0;i<n;i++){
-        const angle = rand(0, Math.PI*2);
-        const speed = rand(2.2, 10.5) * power;
+    function createFirework(x, y) {
+      const count = 60;
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 4 + 2;
         particles.push({
-          x, y,
-          vx: Math.cos(angle)*speed,
-          vy: Math.sin(angle)*speed - rand(0,2),
-          g: rand(0.06, 0.12),
-          life: rand(55, 125),
-          size: rand(1.2, 3.8) * dpr,
-          hue: rand(0, 360),
-          spin: rand(-0.25, 0.25),
-          rot: rand(0, Math.PI*2),
-          kind: Math.random() < 0.28 ? 'rect' : 'dot'
+          x: x, y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1,
+          color: `hsl(${Math.random()*360}, 100%, 60%)`,
+          decay: Math.random() * 0.015 + 0.01
         });
       }
     }
 
-    function fireworkAtClient(clientX, clientY){
-      const x = clientX * dpr;
-      const y = clientY * dpr;
-      burst(x, y, 1);
-      setTimeout(()=>burst(x + rand(-70,70)*dpr, y + rand(-70,70)*dpr, 0.65), 120);
-    }
+    function loop() {
+      // 拖尾效果
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, W/dpr, H/dpr);
+      ctx.globalCompositeOperation = 'lighter';
 
-    function loop(){
-      ctx.clearRect(0,0,W,H);
-      for(let i=particles.length-1;i>=0;i--){
-        const p = particles[i];
-        p.vy += p.g * dpr;
-        p.x += p.vx * dpr;
-        p.y += p.vy * dpr;
-        p.life -= 1;
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05; // 重力
+        p.alpha -= p.decay;
 
-        const alpha = Math.max(0, Math.min(1, p.life/95));
-        ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
 
-        ctx.fillStyle = `hsl(${p.hue} 90% 60%)`;
-        if(p.kind==='rect'){
-          p.rot += p.spin;
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rot);
-          ctx.fillRect(-p.size*1.2, -p.size*0.6, p.size*2.4, p.size*1.2);
-          ctx.restore();
-        }else{
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-          ctx.fill();
-        }
-
-        if(p.life <= 0 || p.y > H + 60*dpr) particles.splice(i,1);
+        if (p.alpha <= 0) particles.splice(i, 1);
       }
-      ctx.globalAlpha = 1;
       requestAnimationFrame(loop);
     }
     loop();
 
-    document.getElementById('btnFire').addEventListener('click', ()=>{
-      fireworkAtClient(innerWidth*0.52, innerHeight*0.28);
-      toast("新年快樂！🎉");
+    // 點擊互動
+    document.getElementById('btnFire').addEventListener('click', (e) => {
+      // 在畫面上方隨機位置放煙火
+      createFirework(innerWidth * 0.5, innerHeight * 0.3);
+      createFirework(innerWidth * 0.3, innerHeight * 0.4);
+      createFirework(innerWidth * 0.7, innerHeight * 0.4);
+      showToast("新年快樂！🎆");
+      e.stopPropagation(); // 防止觸發背景點擊
     });
 
-    document.addEventListener('click', (e)=>{
-      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-      if(tag === 'button') return;
-      fireworkAtClient(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('keydown', (e)=>{
-      if(e.code === 'Space'){
-        e.preventDefault();
-        fireworkAtClient(rand(innerWidth*0.25, innerWidth*0.75), rand(innerHeight*0.18, innerHeight*0.55));
+    document.addEventListener('click', (e) => {
+      if(e.target.tagName !== 'BUTTON'){
+        createFirework(e.clientX, e.clientY);
       }
     });
 
-    setTimeout(()=>fireworkAtClient(innerWidth*0.52, innerHeight*0.30), 450);
+    // 自動放一個開場煙火
+    setTimeout(() => createFirework(innerWidth * 0.5, innerHeight * 0.4), 500);
   </script>
 </body>
 </html>
