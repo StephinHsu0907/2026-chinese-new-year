@@ -204,7 +204,7 @@
       font-family: system-ui, sans-serif;
     }
 
-    /* ===== 新增：按「複製祝福」跳出圖片 (3 秒後消失) ===== */
+    /* ===== 新增：彈出圖片（3 秒後消失）===== */
     #popupOverlay{
       position: fixed;
       inset: 0;
@@ -220,8 +220,10 @@
       animation: popFadeIn 0.18s ease-out;
     }
     #popupOverlay img{
+      display:block;
       max-width: min(92vw, 980px);
       max-height: 86vh;
+      object-fit: contain;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.18);
       box-shadow: 0 18px 60px rgba(0,0,0,0.55);
@@ -275,10 +277,9 @@
   <canvas id="fx"></canvas>
   <div id="toast"></div>
 
-  <!-- ===== 新增：彈出圖片容器 ===== -->
+  <!-- 新增：彈出圖片容器（注意：檔名大小寫要跟 repo 一樣：popup.JPG） -->
   <div id="popupOverlay" aria-hidden="true">
-    <!-- 把 popup.jpg 換成你實際上傳到 repo 的檔名也可以 -->
-    <img src="popup.JPG" alt="恭喜發財祝福圖">
+    <img id="popupImg" src="./popup.JPG" alt="恭喜發財祝福圖">
   </div>
 
   <div class="container">
@@ -316,11 +317,16 @@ Stephin 敬上</div>
 
     // ===== 新增：彈出圖片（3 秒後消失）=====
     const popupOverlay = document.getElementById("popupOverlay");
+    const popupImg = document.getElementById("popupImg");
     let popupTimer = null;
 
     function showPopupFor3s(){
+      // 強制重新抓圖（避免 GitHub Pages / 瀏覽器快取到舊的 404）
+      popupImg.src = `./popup.JPG?v=${Date.now()}`;
+
       popupOverlay.classList.add("show");
       popupOverlay.setAttribute("aria-hidden", "false");
+
       clearTimeout(popupTimer);
       popupTimer = setTimeout(() => {
         popupOverlay.classList.remove("show");
@@ -328,7 +334,7 @@ Stephin 敬上</div>
       }, 3000);
     }
 
-    // 點彈窗可提前關閉（不影響其他功能）
+    // 點彈窗可提前關閉（避免點一下就放煙火）
     popupOverlay.addEventListener("click", (e) => {
       e.stopPropagation();
       popupOverlay.classList.remove("show");
@@ -336,14 +342,11 @@ Stephin 敬上</div>
       clearTimeout(popupTimer);
     });
 
-    // ===== 複製功能（按下後：複製 + toast + 跳出圖片 3 秒）=====
-    document.getElementById("btnCopy").addEventListener("click", async (e) => {
-      e.stopPropagation(); // 避免觸發背景點擊放煙火
-      const text = document.getElementById("blessingText").textContent;
-
-      // 先跳圖（就算剪貼簿權限被擋，也照樣跳圖）
+    // ===== 複製功能（按下後：彈圖 3 秒 + 原本複製/Toast 不變）=====
+    document.getElementById("btnCopy").addEventListener("click", async () => {
       showPopupFor3s();
 
+      const text = document.getElementById("blessingText").textContent;
       try {
         await navigator.clipboard.writeText(text);
         showToast("已複製祝福語 ✅");
@@ -364,6 +367,7 @@ Stephin 敬上</div>
       H = canvas.height = innerHeight * dpr;
       canvas.style.width = innerWidth + 'px';
       canvas.style.height = innerHeight + 'px';
+      ctx.setTransform(1,0,0,1,0,0);
       ctx.scale(dpr, dpr);
     }
     window.addEventListener('resize', resize);
@@ -413,16 +417,16 @@ Stephin 敬上</div>
 
     // 點擊互動
     document.getElementById('btnFire').addEventListener('click', (e) => {
-      // 在畫面上方隨機位置放煙火
       createFirework(innerWidth * 0.5, innerHeight * 0.3);
       createFirework(innerWidth * 0.3, innerHeight * 0.4);
       createFirework(innerWidth * 0.7, innerHeight * 0.4);
       showToast("新年快樂！🎆");
-      e.stopPropagation(); // 防止觸發背景點擊
+      e.stopPropagation();
     });
 
     document.addEventListener('click', (e) => {
-      if(e.target.tagName !== 'BUTTON' && !popupOverlay.classList.contains('show')){
+      if (popupOverlay.classList.contains('show')) return;
+      if(e.target.tagName !== 'BUTTON'){
         createFirework(e.clientX, e.clientY);
       }
     });
