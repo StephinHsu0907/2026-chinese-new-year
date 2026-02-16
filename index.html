@@ -105,7 +105,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
       backdrop-filter: blur(4px);
     }
-    
+
     .v-line.sub {
       background: rgba(255, 247, 230, 0.9); /* 米白底 */
       color: #881313; /* 紅字 */
@@ -204,12 +204,40 @@
       font-family: system-ui, sans-serif;
     }
 
+    /* ===== 新增：按「複製祝福」跳出圖片 (3 秒後消失) ===== */
+    #popupOverlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.55);
+      z-index: 25;
+      padding: 18px;
+    }
+    #popupOverlay.show{
+      display: flex;
+      animation: popFadeIn 0.18s ease-out;
+    }
+    #popupOverlay img{
+      max-width: min(92vw, 980px);
+      max-height: 86vh;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.15);
+    }
+    @keyframes popFadeIn{
+      from { opacity: 0; transform: scale(0.98); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
     /* 手機版適配 */
     @media (max-width: 600px) {
       /* 手機上標題改為橫排，置於頂部 */
       .vertical-title {
         top: 20px;
-        left: 0; 
+        left: 0;
         right: 0;
         text-align: center;
         writing-mode: horizontal-tb;
@@ -247,21 +275,27 @@
   <canvas id="fx"></canvas>
   <div id="toast"></div>
 
+  <!-- ===== 新增：彈出圖片容器 ===== -->
+  <div id="popupOverlay" aria-hidden="true">
+    <!-- 把 popup.jpg 換成你實際上傳到 repo 的檔名也可以 -->
+    <img src="popup.jpg" alt="恭喜發財祝福圖">
+  </div>
+
   <div class="container">
     <div class="vertical-title">
       <div class="v-line">Stephin 給您拜年啦</div>
-      <div class="v-line sub">龍馬精神．日進斗金</div>
+      <div class="v-line sub">恭喜發財．萬事如意</div>
     </div>
 
     <div class="interact-card">
       <div class="msg-title">🧧 新年祝福</div>
       <div class="msg-text" id="blessingText">願您新的一年，
-步伐堅定，心裡有光
-像馬一樣，不受拘束
-向著標竿直跑！
+步伐堅定，心裡有光。
+像馬兒一樣，
+奔向目標，馬到成功！
 
 Stephin 敬上</div>
-      
+
       <div class="btn-group">
         <button class="btn-primary" id="btnFire">✨ 放煙火</button>
         <button class="btn-ghost" id="btnCopy">複製祝福</button>
@@ -280,9 +314,36 @@ Stephin 敬上</div>
       toastTimer = setTimeout(() => toastEl.style.opacity = "0", 1500);
     }
 
-    // ===== 複製功能 =====
-    document.getElementById("btnCopy").addEventListener("click", async () => {
+    // ===== 新增：彈出圖片（3 秒後消失）=====
+    const popupOverlay = document.getElementById("popupOverlay");
+    let popupTimer = null;
+
+    function showPopupFor3s(){
+      popupOverlay.classList.add("show");
+      popupOverlay.setAttribute("aria-hidden", "false");
+      clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => {
+        popupOverlay.classList.remove("show");
+        popupOverlay.setAttribute("aria-hidden", "true");
+      }, 3000);
+    }
+
+    // 點彈窗可提前關閉（不影響其他功能）
+    popupOverlay.addEventListener("click", (e) => {
+      e.stopPropagation();
+      popupOverlay.classList.remove("show");
+      popupOverlay.setAttribute("aria-hidden", "true");
+      clearTimeout(popupTimer);
+    });
+
+    // ===== 複製功能（按下後：複製 + toast + 跳出圖片 3 秒）=====
+    document.getElementById("btnCopy").addEventListener("click", async (e) => {
+      e.stopPropagation(); // 避免觸發背景點擊放煙火
       const text = document.getElementById("blessingText").textContent;
+
+      // 先跳圖（就算剪貼簿權限被擋，也照樣跳圖）
+      showPopupFor3s();
+
       try {
         await navigator.clipboard.writeText(text);
         showToast("已複製祝福語 ✅");
@@ -361,7 +422,7 @@ Stephin 敬上</div>
     });
 
     document.addEventListener('click', (e) => {
-      if(e.target.tagName !== 'BUTTON'){
+      if(e.target.tagName !== 'BUTTON' && !popupOverlay.classList.contains('show')){
         createFirework(e.clientX, e.clientY);
       }
     });
